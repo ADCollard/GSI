@@ -97,6 +97,7 @@ subroutine read_nsstbufr(nread,ndata,nodata,gstime,infile,obstype,lunout, &
   integer(i_kind):: idomsfc,isflg
 
   integer(i_kind) :: ireadmg,ireadsb,klev,msub,nmsub
+  integer(i_kind) :: SST_qcmark, AirT_qcmark
   integer(i_kind), dimension(5) :: idate5
   character(len=8)  :: subset
   character(len=8)  :: crpid
@@ -104,6 +105,7 @@ subroutine read_nsstbufr(nread,ndata,nodata,gstime,infile,obstype,lunout, &
   character(len=5)  :: cid
   real(r_double), dimension(7) :: hdr
   real(r_double), dimension(4) :: loc
+  real(r_double), dimension(2) :: qcmark
   real(r_double), dimension(2,255) :: tpf
   real(r_double), dimension(2,65535) :: tpf2
   real(r_double), dimension(3,65535) :: tpf3
@@ -315,9 +317,19 @@ subroutine read_nsstbufr(nread,ndata,nodata,gstime,infile,obstype,lunout, &
            cycle read_loop
         endif
 
-          call ufbint(lunin,loc,4,1,iret,'CLAT CLATH CLON CLONH')
-          clath=loc(1) ; if ( ibfms(loc(2)).eq.0 ) clath=loc(2)
-          clonh=loc(3) ; if ( ibfms(loc(4)).eq.0 ) clonh=loc(4)
+        call ufbint(lunin,loc,4,1,iret,'CLAT CLATH CLON CLONH')
+        qcmark(:) = 0_r_double          
+        call ufbint(lunin,qcmark,2,1,iret,'QMST QMAT')
+        if (iret /= 0) write(*,*) 'Bad read ',trim(subset),iret,qcmark
+        clath=loc(1) ; if ( ibfms(loc(2)).eq.0 ) clath=loc(2)
+        clonh=loc(3) ; if ( ibfms(loc(4)).eq.0 ) clonh=loc(4)
+        SST_qcmark = nint(qcmark(1))
+        AirT_qcmark = nint(qcmark(2))
+        if (nint(hdr(7)) == 4602630) then
+           write(*,*) 'hdr(7), subset, sst_qc, airt_qc =',hdr(7),trim(subset),SST_qcmark, AirT_qcmark
+           write(*,*) 'iret = ',iret
+           write(*,*) 'qcmark = ',qcmark
+        endif
 
         nread = nread + 1
 
@@ -590,6 +602,8 @@ subroutine read_nsstbufr(nread,ndata,nodata,gstime,infile,obstype,lunout, &
 !             (kx<180 .or. kx>289 .or. (kx>202 .and. kx<280)) ) cycle read_loop
 
            usage = zero
+!          As the SST qcmark is not being set by SDMEdit, use QMAT (air temperature) as a proxy.
+           if ( SST_qcmark > 3 .OR. AirT_qcmark > 3 ) usage = 120.0_r_kind  
            if (   icuse(ikx) < 0 ) usage = 100.0_r_kind
            if ( ncnumgrp(ikx) > 0 ) then                                ! cross validation on
               if (mod(ndata+1,ncnumgrp(ikx))== ncgroup(ikx)-1) usage=ncmiter(ikx)
