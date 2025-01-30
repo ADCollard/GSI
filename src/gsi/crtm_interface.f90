@@ -77,6 +77,11 @@ use radiance_mod, only: n_actual_clouds,cloud_names,n_clouds_fwd,cloud_names_fwd
 use control_vectors, only: lcalc_gfdl_cfrac
 use ncepnems_io, only: imp_physics
 
+
+!USE CloudCoeff_Define      , ONLY: CloudCoeff_Inspect
+!USE CRTM_CloudCoeff,          ONLY: CloudC
+
+
 implicit none
 
 private
@@ -475,6 +480,8 @@ subroutine init_crtm(init_pass,mype_diaghdr,mype,nchanl,nreal,isis,obstype,radmo
     Load_CloudCoeff = .false.
  endif
 
+
+
 ! Set up index for input satellite data array
 
  isatid    = 1  ! index of satellite id
@@ -579,10 +586,12 @@ subroutine init_crtm(init_pass,mype_diaghdr,mype,nchanl,nreal,isis,obstype,radmo
     Load_AerosolCoeff=.false.
  endif
 
+ write(*,*) 'mype, Load_CloudCoeff, Load_AerosolCoeff =',mype,Load_CloudCoeff,Load_AerosolCoeff
 ! Initialize radiative transfer
 
  sensorlist(1)=isis
- quiet=.not. print_verbose
+ !quiet=.not. print_verbose
+ quiet=.false.
 
  if( crtm_coeffs_path /= "" ) then
     if(init_pass .and. mype==mype_diaghdr .and. print_verbose) &
@@ -614,6 +623,9 @@ subroutine init_crtm(init_pass,mype_diaghdr,mype,nchanl,nreal,isis,obstype,radmo
        '   TERMINATE PROGRAM EXECUTION'
     call stop2(71)
  endif
+
+ !write(*,*) 'Init: mype=',mype,Load_CloudCoeff,Load_CloudCoeff
+ !call CloudCoeff_Inspect(CloudC)
 
  sensorindex = 0
  if (channelinfo(1)%sensor_id == isis) then
@@ -654,25 +666,6 @@ else if (channelinfo(1)%sensor_id(1:8) == 'cris-fsr' .AND. isis(1:8) == 'cris-fs
         channel_subset = nuchan(subset_start:subset_end))
 
 else if (channelinfo(1)%sensor_id(1:4) == 'cris' .AND. isis(1:4) == 'cris') then
-   sensorindex = 1
-   subset_start = 0
-   subset_end = 0
-   do k=1, jpch_rad
-     if (isis == nusis(k)) then
-       if (subset_start == 0) subset_start = k
-       subset_end = k
-     endif
-   end do
-
-   error_status = crtm_channelinfo_subset(channelinfo(1), &
-        channel_subset = nuchan(subset_start:subset_end))
-
-! TODO The CRTM spectral coefficient files have the instrument name in the beginning of the file.  The current iasi-ng coefficient
-! TODO file contains '999' instead of the instrument name.  When the final coefficient file is built, it will have 'iasi-ng'.
-! TODO  else if (channelinfo(1)%sensor_id(1:7) == 'iasi-ng' .AND. isis(1:7) == 'iasi-ng') then
-! TODO when this file exists, use the above line.
-else if (channelinfo(1)%sensor_id(1:3) == '999' .AND. isis(1:7) == 'iasi-ng') then
-! TODO and remove the above line.
    sensorindex = 1
    subset_start = 0
    subset_end = 0
@@ -1223,6 +1216,8 @@ subroutine call_crtm(obstype,obstime,data_s,nchanl,nreal,ich, &
   integer(i_kind),parameter,dimension(12):: mday=(/0,31,59,90,&
        120,151,181,212,243,273,304,334/)
   real(r_kind) ::   lai
+  
+  write(*,*) 'Entering call_crtm'
 
   m1=mype+1
   if (n_clouds_fwd_wk>0) hwp_guess=zero  
@@ -2244,16 +2239,20 @@ subroutine call_crtm(obstype,obstime,data_s,nchanl,nreal,ich, &
 
   error_status = 0
   if ( trim(obstype) /= 'modis_aod' .and. trim(obstype) /= 'viirs_aod' ) then
+     write(*,*) 'Calling crtm_k_matrix'
      error_status = crtm_k_matrix(atmosphere,surface,rtsolution_k,&
         geometryinfo,channelinfo(sensorindex:sensorindex),atmosphere_k,&
         surface_k,rtsolution,options=options)
+     write(*,*) 'Called crtm_k_matrix'
 
      if (mixed_use) then 
         ! Zero out data array in cloud structure
         atmosphere(1)%n_clouds = 0
+     write(*,*) 'Calling crtm_k_matrix for clr'
         error_status_clr = crtm_k_matrix(atmosphere,surface,rtsolution_k_clr,&
            geometryinfo,channelinfo(sensorindex:sensorindex),atmosphere_k_clr,&
            surface_k_clr,rtsolution_clr,options=options)
+     write(*,*) 'Called crtm_k_matrix for clr'
      end if
   else
      do i=1,nchanl
@@ -2262,6 +2261,9 @@ subroutine call_crtm(obstype,obstime,data_s,nchanl,nreal,ich, &
      error_status = crtm_aod_k(atmosphere,rtsolution_k,&
         channelinfo(sensorindex:sensorindex),rtsolution,atmosphere_k)
   end if
+! write(*,*) 'K: mype=',mype
+! call CloudCoeff_Inspect(CloudC)
+
 
 ! If the CRTM returns an error flag, do not assimilate any channels for this ob
 ! and set the QC flag to 10 (done in setuprad).

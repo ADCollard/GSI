@@ -142,6 +142,7 @@ CONTAINS
     INTEGER :: l
     ! Check input
     IF ( iFOV < 1 .OR. iFOV > AC%n_FOVS ) THEN
+      write(*,*) 'iFOV, AC%n_fovs=',iFOV, AC%n_fovs
       CALL Display_Message( ROUTINE_NAME, 'Input iFOV inconsistent with AC data', FAILURE )
       T = INVALID
       RETURN
@@ -241,6 +242,7 @@ CONTAINS
 
     ! Check input
     IF ( iFOV < 1 .OR. iFOV > AC%n_FOVS ) THEN
+      write(*,*) 'Apply iFOV, AC%n_fovs=',iFOV, AC%n_fovs
       CALL Display_Message( ROUTINE_NAME, 'Input iFOV inconsistent with AC data', FAILURE )
       T = INVALID
       RETURN

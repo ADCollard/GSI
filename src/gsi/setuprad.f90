@@ -522,7 +522,6 @@ contains
   ssmis_img  = obstype == 'ssmis_img'
   ssmis_env  = obstype == 'ssmis_env'
   iasi       = obstype == 'iasi'
-  iasing     = obstype == 'iasi-ng'
   cris       = obstype == 'cris' .or. obstype == 'cris-fsr'
   seviri     = obstype == 'seviri'
   atms       = obstype == 'atms'
@@ -909,7 +908,7 @@ contains
 !       Load channel data into work array.
            tb_obs(jc) = data_s(jc+nreal,n)
         end do
- 
+        write(*,*) 'mype isis A=',mype,isis
 
 !       Interpolate model fields to observation location, call crtm and create jacobians
 !       Output both tsim and tsim_clr for allsky
@@ -917,23 +916,27 @@ contains
         tcc=zero
         total_cloud_cover=zero
         if (radmod%lcloud_fwd) then
+        write(*,*) 'mype isis A1=',mype,isis
           call call_crtm(obstype,dtime,data_s(:,n),nchanl,nreal,ich, &
              tvp,qvp,qs,clw_guess,ciw_guess,rain_guess,snow_guess,prsltmp,prsitmp, &
              trop5,tzbgr,dtsavg,sfc_speed, &
              tsim,emissivity,chan_level,ptau5,ts,emissivity_k, &
                 temp,wmix,jacobian,error_status,tsim_clr=tsim_clr,tcc=tcc, & 
                 tcwv=tcwv,hwp_ratio=hwp_ratio,stability=stability)         
+        write(*,*) 'mype isis A2=',mype,isis
           if(gmi) then
              gmi_low_angles(1:3)=data_s(ilzen_ang:iscan_ang,n)
              gmi_low_angles(4:5)=data_s(iszen_ang:isazi_ang,n)
              data_s(ilzen_ang:iscan_ang, n) = data_s(ilzen_ang2:iscan_ang2, n)
              data_s(iszen_ang:isazi_ang, n) = data_s(iszen_ang2:isazi_ang2, n)
+        write(*,*) 'mype isis A3=',mype,isis
              call call_crtm(obstype,dtime,data_s(:,n),nchanl,nreal,ich, &
                 tvp,qvp,qs,clw_guess,ciw_guess,rain_guess,snow_guess,prsltmp,prsitmp, &
                  trop5,tzbgr,dtsavg,sfc_speed, &
                  tsim2,emissivity2,chan_level,ptau52,ts2,emissivity_k2, &
                  temp2,wmix2,jacobian2,error_status,tsim_clr=tsim_clr2,tcc=tcc,&
                  tcwv=tcwv,hwp_ratio=hwp_ratio,stability=stability)
+        write(*,*) 'mype isis A4=',mype,isis
              ! merge 
              emissivity(10:13)  = emissivity2(10:13)
              ts(10:13)          = ts2(10:13)
@@ -952,11 +955,13 @@ contains
           total_cloud_cover = tcc(1)
           cld = total_cloud_cover
         else
+        write(*,*) 'mype isis A5=',mype,isis
           call call_crtm(obstype,dtime,data_s(:,n),nchanl,nreal,ich, &
              tvp,qvp,qs,clw_guess,ciw_guess,rain_guess,snow_guess,prsltmp,prsitmp, &
              trop5,tzbgr,dtsavg,sfc_speed, &
              tsim,emissivity,chan_level,ptau5,ts,emissivity_k, &
              temp,wmix,jacobian,error_status)
+        write(*,*) 'mype isis A6=',mype,isis
           if(gmi) then
              gmi_low_angles(1:3)=data_s(ilzen_ang:iscan_ang,n)
              gmi_low_angles(4:5)=data_s(iszen_ang:isazi_ang,n)
@@ -967,6 +972,7 @@ contains
                  trop5,tzbgr,dtsavg,sfc_speed, &
                  tsim2,emissivity2,chan_level,ptau52,ts2,emissivity_k2, &
                  temp2,wmix2,jacobian2,error_status)
+        write(*,*) 'mype isis A7=',mype,isis
              ! merge 
              emissivity(10:13)  = emissivity2(10:13)
              ts(10:13)          = ts2(10:13)
@@ -982,6 +988,7 @@ contains
              cosza2 = cos(data_s(ilzen_ang2,n))
           endif
         endif
+        write(*,*) 'mype B=',mype 
 
 ! If the CRTM returns an error flag, do not assimilate any channels for this ob 
 ! and set the QC flag to ifail_crtm_qc.
@@ -1099,6 +1106,7 @@ contains
            endif
         endif
 
+        write(*,*) 'mype C=',mype 
         predbias=zero
 
 !$omp parallel do  schedule(dynamic,1) private(i,mm,j,k,tlap,node,bias)

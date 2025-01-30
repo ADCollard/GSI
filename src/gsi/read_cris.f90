@@ -327,22 +327,22 @@ subroutine read_cris(mype,val_cris,ithin,isfcalc,rmesh,jsatid,gstime,&
   imager_coeff = .false. 
 !TODO  spc_filename = trim(crtm_coeffs_path)//'viirs-m_'//trim(jsatid)//'.SpcCoeff.bin'  ! when viirs naming convention becomes standarized
   if ( trim(jsatid) == 'npp' ) then
-     spc_filename = trim(crtm_coeffs_path)//'viirs-m_npp.SpcCoeff.bin'
+     spc_filename = trim(crtm_coeffs_path)//'viirs-m_npp.SpcCoeff.nc'
      sensorlist_imager = 'viirs-m_npp'
   elseif ( trim(jsatid) == 'n20' ) then
-     spc_filename = trim(crtm_coeffs_path)//'viirs-m_n20.SpcCoeff.bin' 
+     spc_filename = trim(crtm_coeffs_path)//'viirs-m_n20.SpcCoeff.nc' 
      sensorlist_imager = 'viirs-m_n20'
      inquire(file=trim(spc_filename), exist=imager_coeff)
      if ( .not. imager_coeff ) then
-       spc_filename = trim(crtm_coeffs_path)//'viirs-m_j1.SpcCoeff.bin'
+       spc_filename = trim(crtm_coeffs_path)//'viirs-m_j1.SpcCoeff.nc'
        sensorlist_imager = 'viirs-m_j1'
      endif
   elseif ( trim(jsatid) == 'n21' ) then
-     spc_filename = trim(crtm_coeffs_path)//'viirs-m_n21.SpcCoeff.bin' 
+     spc_filename = trim(crtm_coeffs_path)//'viirs-m_n21.SpcCoeff.nc' 
      sensorlist_imager = 'viirs-m_n21'
      inquire(file=trim(spc_filename), exist=imager_coeff)
      if ( .not. imager_coeff ) then
-       spc_filename = trim(crtm_coeffs_path)//'viirs-m_j2.SpcCoeff.bin'
+       spc_filename = trim(crtm_coeffs_path)//'viirs-m_j2.SpcCoeff.nc'
        sensorlist_imager = 'viirs-m_j2'
      endif
   endif   
@@ -359,10 +359,10 @@ subroutine read_cris(mype,val_cris,ithin,isfcalc,rmesh,jsatid,gstime,&
 
   if( crtm_coeffs_path /= "" ) then
      if(mype_sub==mype_root .and. print_verbose) write(6,*)'READ_CRIS: crtm_spccoeff_load() on path "'//trim(crtm_coeffs_path)//'"'
-     error_status = crtm_spccoeff_load(sensorlist,&
+     error_status = crtm_spccoeff_load(sensorlist,netCDF=.TRUE.,&
         File_Path = crtm_coeffs_path,quiet=quiet)
   else
-     error_status = crtm_spccoeff_load(sensorlist,quiet=quiet)
+     error_status = crtm_spccoeff_load(sensorlist,netCDF=.TRUE.,quiet=quiet)
   endif
 
   if (error_status /= success) then
@@ -455,7 +455,7 @@ subroutine read_cris(mype,val_cris,ithin,isfcalc,rmesh,jsatid,gstime,&
 ! Big loop to read data file
   next=0
   irec=0
-  nrec = 999999
+  nrec = 99999
 ! Big loop over standard data feed and possible rars/db data
 ! llll=1 is normal feed, llll=2 RARS data, llll=3 DB/UW data)
   ears_db_loop: do llll= 1, 3
