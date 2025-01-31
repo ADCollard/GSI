@@ -325,7 +325,7 @@ subroutine read_cris(mype,val_cris,ithin,isfcalc,rmesh,jsatid,gstime,&
   quiet=.not. verbose
 
   imager_coeff = .false. 
-!TODO  spc_filename = trim(crtm_coeffs_path)//'viirs-m_'//trim(jsatid)//'.SpcCoeff.bin'  ! when viirs naming convention becomes standarized
+!TODO  spc_filename = trim(crtm_coeffs_path)//'viirs-m_'//trim(jsatid)//'.SpcCoeff.nc4'  ! when viirs naming convention becomes standarized
   if ( trim(jsatid) == 'npp' ) then
      spc_filename = trim(crtm_coeffs_path)//'viirs-m_npp.SpcCoeff.nc'
      sensorlist_imager = 'viirs-m_npp'
