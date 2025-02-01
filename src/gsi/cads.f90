@@ -2157,12 +2157,12 @@ subroutine cads_imager_calc(obstype,isis,nobs,nreal,nchanl,nsig,data_s,init_pass
        isis_cads = 'viirs-m_npp'
      elseif ( isis == 'cris-fsr_n20' ) then
        isis_cads = 'viirs-m_n20'
-       spc_filename = trim(crtm_coeffs_path)//trim(isis_cads)//'.SpcCoeff.nc4'
+       spc_filename = trim(crtm_coeffs_path)//trim(isis_cads)//'.SpcCoeff.nc'
        inquire(file=trim(spc_filename), exist=imager_spccoeff)
        if ( .not. imager_spccoeff ) isis_cads = 'viirs-m_j1'
      elseif ( isis == 'cris-fsr_n21' ) then
        isis_cads = 'viirs-m_n21'
-       spc_filename = trim(crtm_coeffs_path)//trim(isis_cads)//'.SpcCoeff.nc4'
+       spc_filename = trim(crtm_coeffs_path)//trim(isis_cads)//'.SpcCoeff.nc'
        inquire(file=trim(spc_filename), exist=imager_spccoeff)
        if ( .not. imager_spccoeff ) isis_cads = 'viirs-m_j2'
      endif
@@ -2170,9 +2170,9 @@ subroutine cads_imager_calc(obstype,isis,nobs,nreal,nchanl,nsig,data_s,init_pass
 !    nchanl_cads = 5   ! channels 12 - 16
    endif
 
-   spc_filename = trim(crtm_coeffs_path)//trim(isis_cads)//'.SpcCoeff.nc4'
+   spc_filename = trim(crtm_coeffs_path)//trim(isis_cads)//'.SpcCoeff.nc'
    inquire(file=trim(spc_filename), exist=imager_spccoeff)
-   tau_filename = trim(crtm_coeffs_path)//trim(isis_cads)//'.TauCoeff.nc4'
+   tau_filename = trim(crtm_coeffs_path)//trim(isis_cads)//'.TauCoeff.nc'
    inquire(file=trim(tau_filename), exist=imager_taucoeff)
 
 ! IF the RTM files exist allocate and setup various arrays for the RTM
