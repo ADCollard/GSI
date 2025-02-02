@@ -539,7 +539,7 @@ subroutine read_bufrtovs(mype,val_tovs,ithin,isfcalc,&
            if (.NOT. spc_coeff_found) then
               if (spc_coeff_versions == 0) then
                  write(6,*)'READ_BUFRTOVS:  ***ERROR*** crtm_spccoeff_load error_status=',error_status,&
-                    '   TERMINATE PROGRAM EXECUTION'
+                    '   TERMINATE PROGRAM EXECUTION, file is',spc_filename
                  call stop2(71)
               else
                  write(6,*)'READ_BUFRTOVS:  ', spc_coeff_versions, ' versions of SpcCoeff found for ', trim(sis)
@@ -549,9 +549,9 @@ subroutine read_bufrtovs(mype,val_tovs,ithin,isfcalc,&
 
               if( crtm_coeffs_path /= "" ) then
                  error_status = crtm_spccoeff_load(sensorlist,&
-                    File_Path = crtm_coeffs_path, quiet=quiet )
+                    File_Path = crtm_coeffs_path,netCDF=.TRUE.,quiet=quiet )
               else
-                 error_status = crtm_spccoeff_load(sensorlist,quiet=quiet)
+                 error_status = crtm_spccoeff_load(sensorlist,netCDF=.TRUE.,quiet=quiet)
               endif
               if (error_status /= success) then
                  write(6,*)'READ_BUFRTOVS:  ***ERROR*** crtm_spccoeff_load error_status=',error_status,&

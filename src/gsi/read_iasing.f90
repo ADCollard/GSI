@@ -284,9 +284,9 @@ subroutine read_iasing(mype,val_iasing,ithin,isfcalc,rmesh,jsatid,gstime,&
   if( crtm_coeffs_path /= "" ) then
      if(mype_sub==mype_root .and. print_verbose) write(6,*)'READ_IASI-NG: crtm_spccoeff_load() on path "'//trim(crtm_coeffs_path)//'"'
      error_status = crtm_spccoeff_load(sensorlist,&
-        File_Path = crtm_coeffs_path,quiet=quiet )
+        File_Path = crtm_coeffs_path,netCDF=.TRUE.,quiet=quiet )
   else
-     error_status = crtm_spccoeff_load(sensorlist,quiet=quiet)
+     error_status = crtm_spccoeff_load(sensorlist,netCDF=.TRUE.,quiet=quiet)
   endif
 
   if (error_status /= success) then

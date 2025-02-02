@@ -46,6 +46,16 @@ load(pathJoin("ncio", ncio_ver))
 load(pathJoin("crtm", crtm_ver))
 load(pathJoin("ncdiag",ncdiag_ver))
 
+setenv("crtm_ROOT","/lfs/h2/emc/da/noscrub/andrew.collard/git/CRTMv3/build")
+setenv("crtm_VERSION","3.1.1")
+setenv("CRTM_INC","/lfs/h2/emc/da/noscrub/andrew.collard/git/CRTMv3/build/module/crtm/Intel/2021.5.0.20211109")
+setenv("CRTM_LIB","/lfs/h2/emc/da/noscrub/andrew.collard/git/CRTMv3/build/libcrtm.a")
+setenv("CRTM_FIX","/lfs/h2/emc/da/noscrub/andrew.collard/git/CRTMv3/fix")
+whatis("Name: crtm")
+whatis("Version: 3.1.1")
+whatis("Category: library")
+whatis("Description: crtm library")load(pathJoin("prod_util", prod_util_ver))
+
 pushenv("GSI_BINARY_SOURCE_DIR", "/lfs/h2/emc/global/noscrub/emc.global/FIX/fix/gsi/20241022")
 
 whatis("Description: GSI environment on WCOSS2")
