@@ -96,7 +96,7 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
   real(r_kind) :: rlon00, rlat00, cdist, disterr, disterrmax, vdisterrmax, sterrmax, dlnpob
   real(r_kind) :: toff, t4dv, tdiff
   real(r_kind) :: uwind, vwind, u0, v0, u00, v00, ppb, usage
-  real(r_kind) :: obserr, var_jb, del, ediff
+  real(r_kind) :: obserr, del, ediff
   real(r_kind) :: tsavg,ff10,sfcr,zz
   real(r_kind) :: qjbmin,tjbmin,wjbmin
   real(r_kind) :: terrmin=half
@@ -163,7 +163,6 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
   ntmatch=0
   ntx(ntread)=0
   ntxall=0
-  var_jb=zero
   do nc=1,nconvtype
      if(trim(ioctype(nc)) == trim(obstype))then
        ntmatch=ntmatch+1
@@ -356,10 +355,6 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
          ! Temperature error
          obserr=(one-del)*etabl(kx,k1,2)+del*etabl(kx,k2,2)
          obserr=max(obserr,terrmin)
-         ! Varjb
-         var_jb=(one-del)*btabl_t(kx,k1,2)+del*btabl_t(kx,k2,2)
-         var_jb=max(var_jb,tjbmin) 
-         if (var_jb >=10.0_r_kind) var_jb=zero
                                                                     
          ! Write to output array
          iout = iout + 1
@@ -388,7 +383,7 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
          cdata_all(22,iout)=bmiss                  ! provider name
          cdata_all(23,iout)=bmiss                  ! subprovider name
          cdata_all(24,iout)=bmiss                  ! cat
-         cdata_all(25,iout)=var_jb                 ! non linear qc for T
+         cdata_all(25,iout)=zero                   ! non linear qc for T
          if (aircraft_t_bc_pof .or. aircraft_t_bc .or.aircraft_t_bc_ext) then  ! These are obviously not used but are here to
                                                                                ! keep the array sizes consistent
             cdata_all(26,iout)=zero     ! phase of flight
@@ -421,10 +416,6 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
          ! Spc Hum error
          obserr=(one-del)*etabl(kx,k1,3)+del*etabl(kx,k2,3)
          obserr=max(obserr,qerrmin)
-         ! Varjb
-         var_jb=(one-del)*btabl_q(kx,k1,2)+del*btabl_q(kx,k2,2)
-         var_jb=max(var_jb,qjbmin) 
-         if (var_jb >=10.0_r_kind) var_jb=zero
 
          ! Write to output array
          iout = iout + 1
@@ -455,7 +446,7 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
          cdata_all(22,iout)= bmiss                 ! cat
          cdata_all(23,iout)= bmiss                 ! non linear qc b parameter
          cdata_all(24,iout)=bmiss                  ! cat
-         cdata_all(25,iout)=var_jb                 ! non linear qc for T
+         cdata_all(25,iout)=zero                   ! non linear qc for T
          cdata_all(26,iout)=bmiss                  ! Dummy                
          if(perturb_obs)cdata_all(nreal,iout)=ran01dom()*perturb_fact ! q perturbation
 
@@ -483,10 +474,6 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
          ! Wind error
          obserr=(one-del)*etabl(kx,k1,4)+del*etabl(kx,k2,4)
          obserr=max(obserr,werrmin)
-         ! Varjb
-         var_jb=(one-del)*btabl_uv(kx,k1,2)+del*btabl_uv(kx,k2,2)
-         var_jb=max(var_jb,wjbmin) 
-         if (var_jb >=10.0_r_kind) var_jb=zero
 
          ! Write to output array
          uwind = -obsdat(7,1) * sin(obsdat(6,1)*deg2rad) 
@@ -530,7 +517,7 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
          cdata_all(22,iout)=bmiss                  ! provider name
          cdata_all(23,iout)=bmiss                  ! subprovider name
          cdata_all(24,iout)=bmiss                  ! cat
-         cdata_all(25,iout)=var_jb                 ! non linear qc for uv
+         cdata_all(25,iout)=zero                   ! non linear qc for uv
          cdata_all(26,iout)=one                    ! hilbert curve weight, modified later
          if(perturb_obs)then
             cdata_all(27,iout)=ran01dom()*perturb_fact ! u perturbation
