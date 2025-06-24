@@ -452,7 +452,8 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
            cdata_all(25,iout)=var_jb                 ! non linear qc for T
            cdata_all(26,iout)=bmiss                  ! Dummy                
            if(perturb_obs)cdata_all(nreal,iout)=ran01dom()*perturb_fact ! q perturbation
-           write(191,*) 'Q ob: obserr, qerrmin, ppb, obsdat(1,1), kx, k1, k2, del, etabl(kx,k1,2),etabl(kx,k2,2)=',&
+
+                   write(191,*) 'Q ob: obserr, qerrmin, ppb, obsdat(1,1), kx, k1, k2, del, etabl(kx,k1,2),etabl(kx,k2,2)=',&
                    obserr, qerrmin, ppb, obsdat(1,1), kx, k1, k2, del, etabl(kx,k1,2),etabl(kx,k2,2)
 
        end if 
