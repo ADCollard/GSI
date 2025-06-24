@@ -34,7 +34,7 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
 !
 !$$$
   use kinds, only: r_single,r_kind,r_double,i_kind
-  use constants, only: zero,one,deg2rad,rad2deg,r60inv,tiny_r_kind,huge_r_kind, half
+  use constants, only: zero,one,one_tenth,deg2rad,rad2deg,r60inv,tiny_r_kind,huge_r_kind, half
   use aircraftinfo, only: aircraft_t_bc,aircraft_t_bc_pof,aircraft_t_bc_ext
   use convinfo, only: nconvtype, ioctype, icuse, ictype, icsubtype, ithin_conv
   use converr,only: etabl
@@ -326,7 +326,7 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
           obsdat(1,1) > zero .AND. obsdat(1,1) < 1.4e5_r_kind) then
 
           ! Assign obs error from error table
-          ppb=obsdat(1,1)
+          ppb=obsdat(1,1)/100_r_kind
           ppb=max(zero,min(ppb,r2000))
           if(ppb>=etabl(kx,1,1)) k1=1
           do kl=1,32
@@ -395,7 +395,7 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
            obsdat(1,1) > zero .AND. obsdat(1,1) < 1.4e5_r_kind) then
            
            ! Assign obs error from error table
-           ppb=obsdat(1,1)
+           ppb=obsdat(1,1)/100_r_kind
            ppb=max(zero,min(ppb,r2000))
            if(ppb>=etabl(kx,1,1)) k1=1
            do kl=1,32
@@ -412,7 +412,7 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
            del=max(zero,min(del,one))
            ! Spc Hum error
            obserr=(one-del)*etabl(kx,k1,3)+del*etabl(kx,k2,3)
-           obserr=max(obserr,qerrmin)
+           obserr=max(obserr,qerrmin)*one_tenth
 
            ! Varjb
            if (njqc) then
@@ -452,6 +452,8 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
            cdata_all(25,iout)=var_jb                 ! non linear qc for T
            cdata_all(26,iout)=bmiss                  ! Dummy                
            if(perturb_obs)cdata_all(nreal,iout)=ran01dom()*perturb_fact ! q perturbation
+           write(191,*) 'Q ob: obserr, qerrmin, ppb, obsdat(1,1), kx, k1, k2, del, etabl(kx,k1,2),etabl(kx,k2,2)=',&
+                   obserr, qerrmin, ppb, obsdat(1,1), kx, k1, k2, del, etabl(kx,k1,2),etabl(kx,k2,2)
 
        end if 
 
@@ -459,7 +461,7 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
            obsdat(1,1) > zero .AND. obsdat(1,1) < 1.4e5_r_kind) then
 
            ! Assign obs error from error table
-           ppb=obsdat(1,1)
+           ppb=obsdat(1,1)/100_r_kind
            ppb=max(zero,min(ppb,r2000))
            if(ppb>=etabl(kx,1,1)) k1=1
            do kl=1,32
@@ -477,6 +479,9 @@ subroutine read_gsb(nread,ndata,nodata,infile,obstype,lunout,gstime,twindin,sis,
            ! Wind error
            obserr=(one-del)*etabl(kx,k1,4)+del*etabl(kx,k2,4)
            obserr=max(obserr,werrmin)
+
+           write(190,*) 'US ob: ppb, obsdat(1,1), kx, k1, k2, del, etabl(kx,k1,4),etabl(kx,k2,4)=',&
+                   ppb, obsdat(1,1), kx, k1, k2, del, etabl(kx,k1,4),etabl(kx,k2,4)
 
            ! Varjb
            if (njqc) then
