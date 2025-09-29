@@ -2,11 +2,11 @@
 #SBATCH -J iodaconv
 #SBATCH -o iodaconv.o%j
 #SBATCH -A da-cpu
-#SBATCH -q batch
+#SBATCH -q debug
 #SBATCH -p hercules
 #SBATCH --nodes=1
 #SBATCH --exclusive
-#SBATCH -t 1:30:00
+#SBATCH -t 0:30:00
 # run python ioda-iodaconverters
 # on GSI netCDF diag files to generate
 # IODA formatted observations for UFO H(x)
@@ -18,6 +18,7 @@ workdir=$2
 adate=$3
 
 # source modulefile to get proper python on environment
+export MACHINE=hercules
 module purge
 module use $GDASApp/modulefiles
 module load GDAS/$MACHINE
