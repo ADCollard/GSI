@@ -224,7 +224,7 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
   
   real(r_double) rstation_id
   real(r_kind) qob,qges,qsges,q2mges,q2mges_water,qsges_o
-  real(r_kind) ratio_errors,dlat,dlon,dtime,dpres,rmaxerr,error
+  real(r_kind) ratio_errors1,ratio_errors2,ratio_errors3,ratio_errors4,ratio_errors,dlat,dlon,dtime,dpres,rmaxerr,error
   real(r_kind) rsig,dprpx,rlow,rhgh,presq,tfact,ramp
   real(r_kind) psges,sfcchk,ddiff,errorx
   real(r_kind) cg_t,cvar,wgt,rat_err2,qcgross
@@ -242,12 +242,13 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
   real(r_kind),dimension(34):: ptablq
   real(r_single),allocatable,dimension(:,:)::rdiagbuf
   real(r_single),allocatable,dimension(:,:)::rdiagbufp
-  real(r_kind),dimension(nsig):: prsltmp2, ttmp, qtmp, utmp,vtmp,hsges
+  real(r_kind),dimension(nsig):: prsltmp2, ttmp, qtmp, qstmp, utmp,vtmp,hsges
   real(r_kind) :: psges2
   real(r_kind),dimension(nsig+1):: prsitmp
   ! GSI profiles are stored with bottom up index; output the profiles
   ! with top down index  
-  real(r_kind),dimension(nsig):: ttmp_reverse,tvtmp_reverse,qtmp_reverse,utmp_reverse,vtmp_reverse
+  real(r_kind),dimension(nsig):: ttmp_reverse,tvtmp_reverse,qtmp_reverse,qstmp_reverse
+  real(r_kind),dimension(nsig):: utmp_reverse,vtmp_reverse
   real(r_kind),dimension(nsig):: hsges_reverse, zges_reverse,prsltmp2_reverse
   real(r_kind),dimension(nsig):: zges_read_reverse, zges_geometric_reverse
   real(r_kind),dimension(nsig+1):: prsitmp_reverse
@@ -568,6 +569,8 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
          nsig,mype,nfldsig)
     call tintrp2a1(geop_hgtl,hsges,dlat,dlon,dtime,hrdifsig,&
          nsig,mype,nfldsig)
+    call tintrp2a1(qg,qstmp,dlat,dlon,dtime,hrdifsig,& ! Need to use qg here (which is qsat over liquid water)
+         nsig,mype,nfldsig)
  
 ! END GEOVALS
      presq=r10*exp(dpres)
@@ -708,10 +711,10 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
      endif
 
      ratio_errors=error*qsges/(errorx+1.0e6_r_kind*rhgh+r8*ramp + lapse_error)
-
 !    Check to see if observations is above the top of the model (regional mode)
      if (dpres > rsig) ratio_errors=zero
      error=one/(error*qsges)
+     ratio_errors1=ratio_errors*error
 
      iz = max(1, min( int(dpres), nsig))
      delz = max(zero, min(dpres - real(iz,r_kind), one))
@@ -801,6 +804,7 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
      else
         ratio_errors = ratio_errors/sqrt(dup(i))
      end if
+     
 
      if (ratio_errors*error <=tiny_r_kind) muse(i)=.false.
      if (nobskeep>0 .and. luse_obsdiag) call obsdiagNode_get(my_diag, jiter=nobskeep, muse=muse(i))
@@ -819,6 +823,8 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
 
 !    Compute penalty terms
      val      = error*ddiff
+     ratio_errors2=ratio_errors*error
+
      if(nvqc .and. ibeta(ikx) >0  ) ratio_errors=0.8_r_kind*ratio_errors
      if(luse(i))then
         val2     = val*val
@@ -836,9 +842,12 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
            ibb=0
            ikk=0
         endif
+     ratio_errors3=ratio_errors*error
  
         call vqc_setup(val,ratio_errors,error,cvar,cg_t,ibb,ikk,&
                       var_jb,rat_err2,wgt,valqc)
+     ratio_errors4=ratio_errors
+     !ratio_errors4=ratio_errors*error
         rwgt = wgt/wgtlim 
 !       Accumulate statistics for obs belonging to this task
         if(muse(i))then
@@ -951,6 +960,10 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
         if (err_input>tiny_r_kind) errinv_input = one/err_input
         if (err_adjst>tiny_r_kind) errinv_adjst = one/err_adjst
         if (err_final>tiny_r_kind) errinv_final = one/err_final
+
+        if (prest > 10.0 .and. prest < 100.0) then
+                write(100,*) prest,errinv_input, errinv_adjst, errinv_final, ratio_errors, ratio_errors4
+        end if
 
         if(binary_diag) call contents_binary_diag_(my_diag)
         if(netcdf_diag) call contents_netcdf_diag_(my_diag)
@@ -1468,6 +1481,16 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
            call nc_diag_metadata_to_single("Errinv_Input",  errinv_input           )
            call nc_diag_metadata_to_single("Errinv_Adjust",errinv_adjst            )
            call nc_diag_metadata_to_single("Errinv_Final",  errinv_final           )
+           call nc_diag_metadata_to_single("Dup",  sqrt(dup(i))           )
+           call nc_diag_metadata_to_single("rlow",  ramp           )
+           call nc_diag_metadata_to_single("rhgh",  rhgh           )
+           call nc_diag_metadata_to_single("qsges",  qsges           )
+           call nc_diag_metadata_to_single("errorx",  errorx           )
+           call nc_diag_metadata_to_single("lapse_error",  lapse_error           )
+           call nc_diag_metadata_to_single("ratio_errors1",  ratio_errors1           )
+           call nc_diag_metadata_to_single("ratio_errors2",  ratio_errors2           )
+           call nc_diag_metadata_to_single("ratio_errors3",  ratio_errors3           )
+           call nc_diag_metadata_to_single("ratio_errors4",  ratio_errors4           )
 
            call nc_diag_metadata_to_single("Observation",  data(iqob,i)            )
            call nc_diag_metadata_to_single("Obs_Minus_Forecast_adjusted",ddiff     )
@@ -1514,6 +1537,7 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
        utmp_reverse(kk)     = utmp(k)
        vtmp_reverse(kk)     = vtmp(k)
        ttmp_reverse(kk)     = ttmp(k)
+       qstmp_reverse(kk)     = qstmp(k)
        !tvtmp_reverse(kk)    = tges(k)   !emily
        qtmp_reverse(kk)     = qtmp(k)
        hsges_reverse(kk)    = hsges(k)
@@ -1534,6 +1558,8 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
     call nc_diag_data2d("eastward_wind", sngl(utmp_reverse))
     call nc_diag_data2d("northward_wind", sngl(vtmp_reverse))
     call nc_diag_data2d("geopotential_height", sngl(hsges_reverse))        !orig
+    call nc_diag_metadata("surface_geometric_height", sngl(data(izz,i)) ) !ADC    
+    call nc_diag_data2d("saturated_specific_humidity_profile", sngl(qstmp_reverse)) !ADC    
 !   call nc_diag_data2d("geopotential_height", sngl(zges_read_reverse))  !emily
 !    call nc_diag_data2d("geometric_height", sngl(zges_geometric_reverse))  !emily 
    !<<emily
@@ -1580,13 +1606,7 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
               call nc_diag_metadata_to_single("Observation_Tdry", data(itemp,i)    )
               call nc_diag_metadata_to_single("Setup_QC_Mark",    data(iqt,  i)    )
            endif
-           call nc_diag_metadata_to_single("Errinv_Input",            errinv_input)     
-           call nc_diag_metadata_to_single("Errinv_Adjust",           errinv_adjst)     
-           call nc_diag_metadata_to_single("Errinv_Final",            errinv_final)     
 
-           call nc_diag_metadata_to_single("Observation",                   data(iqob,i))
-           call nc_diag_metadata_to_single("Obs_Minus_Forecast_adjusted",   ddiff)       
-           call nc_diag_metadata_to_single("Obs_Minus_Forecast_unadjusted", ddiff)       
            call nc_diag_metadata_to_single("Forecast_adjusted",             data(iqob,i)-ddiff)
            call nc_diag_metadata_to_single("Forecast_unadjusted",           data(iqob,i)-ddiff)
            call nc_diag_metadata_to_single("Forecast_Saturation_Spec_Hum",  qsges)       
@@ -1628,8 +1648,12 @@ subroutine setupq(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
     call nc_diag_data2d("specific_humidity", sngl(qtmp))
     call nc_diag_data2d("eastward_wind", sngl(utmp))
     call nc_diag_data2d("northward_wind", sngl(vtmp))
-    call nc_diag_data2d("geopotential_height", sngl(hsges)) 
+    !call nc_diag_data2d("geopotential_height", sngl(hsges)) 
     call nc_diag_metadata("surface_air_pressure", psges2*r1000) 
+    call nc_diag_data2d("surface_geopotential_height", sngl(hsges) )
+    call nc_diag_metadata("surface_geometric_height", sngl(data(izz,i)) ) !ADC    
+    call nc_diag_data2d("saturated_specific_humidity_profile", sngl(qstmp)) !ADC    
+    write(*,*) 'Output surface_geometric_height'
     ! END GEOVALS
 
   end subroutine contents_netcdf_diagp_

@@ -1850,12 +1850,12 @@ subroutine setupw(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
               call nc_diag_metadata_to_single("Analysis_Use_Flag",    -one             )
            endif
 
-           !call nc_diag_metadata_to_single("drpx",drpx             )  ! ADC
-           !call nc_diag_metadata_to_single("rhgh",rhgh             )  ! ADC
-           !call nc_diag_metadata_to_single("rlow",rlow             )  ! ADC
-           !call nc_diag_metadata_to_single("in_error_1",in_error_1 )  ! ADC
-           !call nc_diag_metadata_to_single("in_error_2",in_error_2 )   ! ADC
-           !call nc_diag_metadata_to_single("ratio_errors",ratio_errors1) ! ADC
+           call nc_diag_metadata_to_single("drpx",drpx             )  ! ADC
+           call nc_diag_metadata_to_single("rhgh",rhgh             )  ! ADC
+           call nc_diag_metadata_to_single("rlow",rlow             )  ! ADC
+           call nc_diag_metadata_to_single("in_error_1",in_error_1 )  ! ADC
+           call nc_diag_metadata_to_single("in_error_2",in_error_2 )   ! ADC
+           call nc_diag_metadata_to_single("ratio_errors",ratio_errors1) ! ADC
 
 
            call nc_diag_metadata_to_single("Nonlinear_QC_Rel_Wgt",rwgt)             
@@ -1971,10 +1971,11 @@ subroutine setupw(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
 !    call nc_diag_data2d("eastward_wind", sngl(utmp))
 !    call nc_diag_data2d("northward_wind", sngl(vtmp))
 !    call nc_diag_data2d("geopotential_height", sngl(hsges) )
-    !call nc_diag_metadata("surface_geometric_height", sngl(zsges) ) Both
+    call nc_diag_metadata("surface_geometric_height", sngl(zsges) ) 
+    ! Both
     !surface_geometric_height and geopotential height get copied to
     !surface_height in gsi_ncdiag.py
-    call nc_diag_metadata("surface_geopotential_height", sngl(zsges) ) !emily
+    !call nc_diag_metadata("surface_geopotential_height", sngl(zsges) ) !emily
     call nc_diag_metadata("tropopause_pressure", sngl(trop5*r100) )
     call nc_diag_metadata("surface_air_pressure", sngl(psges2*r1000) )
     call nc_diag_metadata("Land_Type_Index", isli)

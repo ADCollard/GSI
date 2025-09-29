@@ -1973,6 +1973,7 @@ subroutine setupt(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
 !    call nc_diag_data2d("northward_wind", sngl(vtmp))
 !    call nc_diag_data2d("geopotential_height", sngl(hsges) )
     call nc_diag_metadata("surface_air_pressure", sngl(psges2*r1000) )
+    call nc_diag_metadata("surface_geometric_height", sngl(data(izz,i)) ) !ADC    
     ! END GEOVALS
 
   end subroutine contents_netcdf_diag_
@@ -2089,6 +2090,7 @@ subroutine setupt(obsLL,odiagLL,lunin,mype,bwork,awork,nele,nobs,is,conv_diagsav
 !    call nc_diag_data2d("northward_wind", sngl(vtmp))
     call nc_diag_data2d("surface_geopotential_height", sngl(hsges) )
     call nc_diag_metadata("surface_air_pressure", sngl(psges2*r1000) )
+    call nc_diag_metadata("surface_geometric_height", sngl(data(izz,i)) ) !ADC    
     ! END GEOVALS
   end subroutine contents_netcdf_diagp_
 
