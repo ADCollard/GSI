@@ -48,7 +48,7 @@ load(pathJoin("ncdiag",ncdiag_ver))
 
 setenv("crtm_ROOT","/lfs/h2/emc/da/noscrub/andrew.collard/git/CRTMv3/build")
 setenv("crtm_VERSION","3.1.1")
-setenv("CRTM_INC","/lfs/h2/emc/da/noscrub/andrew.collard/git/CRTMv3/build/module/crtm/Intel/2021.5.0.20211109")
+setenv("CRTM_INC","/lfs/h2/emc/da/noscrub/andrew.collard/git/CRTMv3/build/module/crtm/Intel/19.1.3.20200925")
 setenv("CRTM_LIB","/lfs/h2/emc/da/noscrub/andrew.collard/git/CRTMv3/build/install/lib/libcrtm.a")
 setenv("CRTM_FIX","/lfs/h2/emc/da/noscrub/andrew.collard/git/CRTMv3/fix")
 whatis("Name: crtm")
