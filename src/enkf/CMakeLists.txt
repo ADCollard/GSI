@@ -72,7 +72,7 @@ if(ENKF_MODE MATCHES "^(WRF|NMMB|FV3REG)$")
 endif()
 
 # See https://github.com/NOAA-EMC/NCEPLIBS-nemsio/pull/22
-target_link_libraries(nemsio::nemsio INTERFACE w3emc::w3emc_d bacio::bacio_4)
+target_link_libraries(nemsio::nemsio INTERFACE w3emc::w3emc_d)
 
 if(NOT TARGET gsi)
   find_package(gsi REQUIRED)
@@ -106,7 +106,7 @@ target_link_libraries(enkf_fortran_obj PUBLIC gsi::gsi)
 target_link_libraries(enkf_fortran_obj PUBLIC NetCDF::NetCDF_Fortran)
 target_link_libraries(enkf_fortran_obj PUBLIC MPI::MPI_Fortran)
 target_link_libraries(enkf_fortran_obj PUBLIC ${LAPACK_LIBRARIES})
-target_link_libraries(enkf_fortran_obj PUBLIC bacio::bacio_4)
+target_link_libraries(enkf_fortran_obj PUBLIC bacio::bacio)
 target_link_libraries(enkf_fortran_obj PUBLIC sigio::sigio)
 target_link_libraries(enkf_fortran_obj PUBLIC sfcio::sfcio)
 target_link_libraries(enkf_fortran_obj PUBLIC nemsio::nemsio)
