@@ -36,6 +36,13 @@ elif [[ $MACHINE_ID = container ]] ; then
     fi
     module purge
 
+elif [[ $MACHINE_ID = aws-ec2 ]] ; then
+    # We are on aws ec2
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /usr/share/lmod/lmod/init/bash
+    fi
+    module purge
+
 elif [[ $MACHINE_ID = wcoss2 || $MACHINE_ID = acorn ]]; then
     # We are on WCOSS2 (cactus, dogwood, or acorn)
     module reset
@@ -46,6 +53,13 @@ elif [[ $MACHINE_ID = gaeac6 ]] ; then
         source /opt/cray/pe/lmod/lmod/init/bash
     fi
     module reset
+
+elif [[ $MACHINE_ID = derecho ]] ; then
+    # We are on NCAR derecho
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /glade/u/apps/derecho/24.12/spack/opt/spack/lmod/8.7.37/gcc/12.4.0/nr3e/lmod/lmod/init/bash
+    fi
+    module --force purge
 
 elif [[ $MACHINE_ID = noaacloud* ]]; then
     # We are on NOAA Cloud
