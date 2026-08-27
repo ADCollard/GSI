@@ -569,12 +569,12 @@ subroutine read_bufrtovs(mype,val_tovs,ithin,isfcalc,&
               if(mype_sub==mype_root .and. print_verbose) write(6,*)'READ_BUFRTOVS: crtm_spccoeff_load() on path "'//trim(crtm_coeffs_path)//'"'
            end if
 
-           spc_filename = trim(crtm_coeffs_path) // trim(sensorlist(1)) // '.SpcCoeff.bin'
+           spc_filename = trim(crtm_coeffs_path) // trim(sensorlist(1)) // '.SpcCoeff.nc'
            INQUIRE(FILE=trim(spc_filename), EXIST=spc_coeff_found)
 
            if (.NOT. spc_coeff_found) then
               if (spc_coeff_versions == 0) then
-                 write(6,*)'READ_BUFRTOVS:  ***ERROR*** crtm_spccoeff_load error_status=',error_status,&
+                 write(6,*)'READ_BUFRTOVS:  ***ERROR*** cannot find =',spc_filename,&
                     '   TERMINATE PROGRAM EXECUTION'
                  call stop2(71)
               else

@@ -14,7 +14,6 @@ local sfcio_ver=os.getenv("sfcio_ver") or "1.4.2"
 local nemsio_ver=os.getenv("nemsio_ver") or "2.5.4"
 local wrf_io_ver=os.getenv("wrf_io_ver") or "1.2.0"
 local ncio_ver=os.getenv("ncio_ver") or "1.1.2"
-local crtm_ver=os.getenv("crtm_ver") or "2.4.0.1"
 local ncdiag_ver=os.getenv("ncdiag_ver") or "1.1.2"
 
 load(pathJoin("netcdf-c", netcdf_c_ver))
@@ -29,5 +28,4 @@ load(pathJoin("sfcio", sfcio_ver))
 load(pathJoin("nemsio", nemsio_ver))
 load(pathJoin("wrf-io", wrf_io_ver))
 load(pathJoin("ncio", ncio_ver))
-load(pathJoin("crtm", crtm_ver))
 load(pathJoin("gsi-ncdiag", ncdiag_ver))

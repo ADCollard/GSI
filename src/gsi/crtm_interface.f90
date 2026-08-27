@@ -588,6 +588,29 @@ subroutine init_crtm(init_pass,mype_diaghdr,mype,nchanl,nreal,isis,obstype,radmo
     if(init_pass .and. mype==mype_diaghdr .and. print_verbose) &
         write(6,*)myname_,': crtm_init() on path "'//trim(crtm_coeffs_path)//'"'
     error_status = crtm_init(sensorlist,channelinfo,&
+       AerosolCoeff_File   = 'AerosolCoeff.nc',&
+       CloudCoeff_File     = 'CloudCoeff.nc',&
+       IRwaterCoeff_File   = 'Nalli.IRwater.EmisCoeff.nc',&
+       IRlandCoeff_File    = 'NPOESS.IRland.EmisCoeff.nc',&
+       IRsnowCoeff_File    = 'NPOESS.IRsnow.EmisCoeff.nc',&
+       IRiceCoeff_File     = 'NPOESS.IRice.EmisCoeff.nc',&
+       VISwaterCoeff_File  = 'NPOESS.VISwater.EmisCoeff.nc',&
+       VISlandCoeff_File   = 'NPOESS.VISland.EmisCoeff.nc',&
+       VISsnowCoeff_File   = 'NPOESS.VISsnow.EmisCoeff.nc',&
+       VISiceCoeff_File    = 'NPOESS.VISice.EmisCoeff.nc',&
+       MWwaterCoeff_File   = 'FASTEM6.MWwater.EmisCoeff.nc',&
+       !       AerosolCoeff_Format = 'netCDF',&
+       !       CloudCoeff_Format   = 'netCDF',&
+       !       SpcCoeff_Format     = 'netCDF',&
+       !       TauCoeff_Format     = 'netCDF',&
+       !       IRwaterCoeff_Format = 'netCDF',&
+       !       IRlandCoeff_Format  = 'netCDF',&
+       !       IRsnowCoeff_Format  = 'netCDF',&
+       !       IRiceCoeff_Format   = 'netCDF',&
+       !       VISwaterCoeff_Format= 'netCDF',&
+       !       VISlandCoeff_Format = 'netCDF',&
+       !       VISsnowCoeff_Format = 'netCDF',&
+       !       VISiceCoeff_Format  = 'netCDF',&
        Process_ID=mype,Output_Process_ID=mype_diaghdr, &
 ! for crtm2.4.1 
 !<Aero need to comment out if CRTM doesn't support 
@@ -599,6 +622,29 @@ subroutine init_crtm(init_pass,mype_diaghdr,mype,nchanl,nreal,isis,obstype,radmo
  else
 
     error_status = crtm_init(sensorlist,channelinfo,&
+       AerosolCoeff_File   = 'AerosolCoeff.nc',&
+       CloudCoeff_File     = 'CloudCoeff.nc',&
+       IRwaterCoeff_File   = 'Nalli.IRwater.EmisCoeff.nc',&
+       IRlandCoeff_File    = 'NPOESS.IRland.EmisCoeff.nc',&
+       IRsnowCoeff_File    = 'NPOESS.IRsnow.EmisCoeff.nc',&
+       IRiceCoeff_File     = 'NPOESS.IRice.EmisCoeff.nc',&
+       VISwaterCoeff_File  = 'NPOESS.VISwater.EmisCoeff.nc',&
+       VISlandCoeff_File   = 'NPOESS.VISland.EmisCoeff.nc',&
+       VISsnowCoeff_File   = 'NPOESS.VISsnow.EmisCoeff.nc',&
+       VISiceCoeff_File    = 'NPOESS.VISice.EmisCoeff.nc',&
+       MWwaterCoeff_File   = 'FASTEM6.MWwater.EmisCoeff.nc',&
+       !       AerosolCoeff_Format = 'netCDF',&
+       !       CloudCoeff_Format   = 'netCDF',&
+       !       SpcCoeff_Format     = 'netCDF',&
+       !       TauCoeff_Format     = 'netCDF',&
+       !       IRwaterCoeff_Format = 'netCDF',&
+       !       IRlandCoeff_Format  = 'netCDF',&
+       !       IRsnowCoeff_Format  = 'netCDF',&
+       !       IRiceCoeff_Format   = 'netCDF',&
+       !       VISwaterCoeff_Format= 'netCDF',&
+       !       VISlandCoeff_Format = 'netCDF',&
+       !       VISsnowCoeff_Format = 'netCDF',&
+       !       VISiceCoeff_Format  = 'netCDF',&
        Process_ID=mype,Output_Process_ID=mype_diaghdr, &
 
 ! for crtm2.4.1

@@ -17,8 +17,16 @@ load(pathJoin("stack-python", stack_python_ver))
 load(pathJoin("cmake", cmake_ver))
 
 load("gsi_common")
+setenv("crtm_ROOT","/scratch3/NCEPDEV/da/Andrew.Collard/git/CRTMv3.2.0-rc1/build")
+setenv("crtm_VERSION","3.2.0")
+setenv("CRTM_INC","/scratch3/NCEPDEV/da/Andrew.Collard/git/CRTMv3.2.0-rc1/build/module/crtm/Intel/2021.1.0.20240703")
+setenv("CRTM_LIB","/scratch3/NCEPDEV/da/Andrew.Collard/git/CRTMv3.2.0-rc1/build/lib/libcrtm.a")
+setenv("CRTM_FIX","/scratch3/NCEPDEV/da/Andrew.Collard/git/CRTMv3.2.0-rc1/fix")
+whatis("Name: crtm")
+whatis("Version: 3.2.0")
+whatis("Category: library")
+whatis("Description: crtm library")load(pathJoin("prod_util", prod_util_ver))
 
 pushenv("GSI_BINARY_SOURCE_DIR", "/scratch3/NCEPDEV/global/role.glopara/fix/gsi/20251105")
-setenv("CRTM_FIX", pathJoin("/scratch3/NCEPDEV/global/role.glopara/fix/crtm", "v" .. crtm_fix_ver))
 
 whatis("Description: GSI environment on Ursa with Intel Compilers")
