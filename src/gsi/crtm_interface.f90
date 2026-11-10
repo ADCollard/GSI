@@ -2186,7 +2186,7 @@ subroutine call_crtm(obstype,obstime,data_s,nchanl,nreal,ich, &
 !             effective radius of all hydrometer types in that layer to zero
 !             CRTM minimum thresholds: cloud content=1.0E-6 and cloud fraction=1.E-12
               if (.not. regional .and. icfs==0 ) atmosphere(1)%cloud_fraction(k) = cf(kk2)
-              if (all(cloud_cont(k,1:n_clouds_fwd_wk) < 1.0E-6_r_kind)) then
+              if (all(cloud(kk2,1:n_clouds_fwd_wk)*c6(k) < 1.0E-6_r_kind)) then
                  atmosphere(1)%cloud_fraction(k) = one
               else
                  do ii=1,n_clouds_fwd_wk
